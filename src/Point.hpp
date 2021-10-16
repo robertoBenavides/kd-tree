@@ -7,32 +7,32 @@
 
 template <size_t N>
 class Point {
- public:
-  typedef double* iterator;
-  typedef const double* const_iterator;
+public:
+    typedef double* iterator;
+    typedef const double* const_iterator;
+    
+    size_t size() const;
 
-  size_t size() const;
+    double& operator[](size_t index);
+    double operator[](size_t index) const;
 
-  double& operator[](size_t index);
-  double operator[](size_t index) const;
+    iterator begin();
+    iterator end();
 
-  iterator begin();
-  iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
 
-  const_iterator begin() const;
-  const_iterator end() const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Point& lhs) {
-    out << "[ ";
-    for (size_t i = 0; i < N - 1; ++i) {
-      out << lhs[i] << " - ";
+    friend std::ostream& operator<<(std::ostream& out, const Point& lhs) {
+        out << "[ ";
+        for (size_t i = 0; i < N - 1; ++i) {
+            out << lhs[i] << " - ";
+        }
+        out << lhs[N - 1] << " ]";
+        return out;
     }
-    out << lhs[N - 1] << " ]";
-    return out;
-  }
 
- private:
-  double coords[N];
+private:
+    double coords[N];
 };
 
 template <size_t N>
@@ -44,62 +44,123 @@ bool operator==(const Point<N>& one, const Point<N>& two);
 template <size_t N>
 bool operator!=(const Point<N>& one, const Point<N>& two);
 
+template <size_t N>
+bool operator<(const Point<N>& one, const Point<N>& two);
+
+template <size_t N>
+bool operator>(const Point<N>& one, const Point<N>& two);
+
+template <size_t N>
+bool operator<=(const Point<N>& one, const Point<N>& two);
+
+template <size_t N>
+bool operator>=(const Point<N>& one, const Point<N>& two);
 /** Point class implementation details */
 
 #include <algorithm>
 
 template <size_t N>
 size_t Point<N>::size() const {
-  return N;
+    return N;
 }
 
 template <size_t N>
 double& Point<N>::operator[](size_t index) {
-  return coords[index];
+    return coords[index];
 }
 
 template <size_t N>
 double Point<N>::operator[](size_t index) const {
-  return coords[index];
+    return coords[index];
 }
 
 template <size_t N>
 typename Point<N>::iterator Point<N>::begin() {
-  return coords;
+    return coords;
 }
 
 template <size_t N>
 typename Point<N>::const_iterator Point<N>::begin() const {
-  return coords;
+    return coords;
 }
 
 template <size_t N>
 typename Point<N>::iterator Point<N>::end() {
-  return begin() + size();
+    return begin() + size();
 }
 
 template <size_t N>
 typename Point<N>::const_iterator Point<N>::end() const {
-  return begin() + size();
+    return begin() + size();
 }
 
 template <size_t N>
 double distance(const Point<N>& one, const Point<N>& two) {
-  double result = 0.0;
-  for (size_t i = 0; i < N; ++i) {
-    result += (one[i] - two[i]) * (one[i] - two[i]);
-  }
-  return sqrt(result);
+    double result = 0.0;
+    for (size_t i = 0; i < N; ++i) {
+        result += (one[i] - two[i]) * (one[i] - two[i]);
+    }
+    return sqrt(result);
 }
 
 template <size_t N>
 bool operator==(const Point<N>& one, const Point<N>& two) {
-  return std::equal(one.begin(), one.end(), two.begin());
+    return std::equal(one.begin(), one.end(), two.begin());
 }
 
 template <size_t N>
 bool operator!=(const Point<N>& one, const Point<N>& two) {
-  return !(one == two);
+    return !(one == two);
 }
 
+
+template <size_t N>
+bool operator<(const Point<N>& one, const Point<N>& two) {
+    double* i= one.begin();
+    int ii = 0;
+    while (i != one.end()) {
+        if (*i != *(two.begin() + ii)) {
+            if (*i < *(two.begin() + ii)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        ii++;
+        i++;
+    }
+    return false;
+
+}
+
+template <size_t N>
+bool operator>(const Point<N>& one, const Point<N>& two) {
+    auto i = one.begin();
+    int ii = 0;
+    while (i != one.end()) {
+        if (*i != *(two.begin() + ii)) {
+            if (*i > *(two.begin() + ii)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        
+        ii++;
+        i++;
+    }
+    return false;
+}
+
+template <size_t N>
+bool operator<=(const Point<N>& one, const Point<N>& two) {
+    return (one == two || one < two);
+}
+
+template <size_t N>
+bool operator>=(const Point<N>& one, const Point<N>& two) {
+    return (one == two || one > two);
+}
 #endif  // SRC_POINT_HPP_
